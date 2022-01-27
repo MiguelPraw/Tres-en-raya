@@ -2,6 +2,9 @@
 
 let nodoJuego = document.querySelector("#juego");
 
+const WIN_CONDITION = 3;
+const TAMAÑO_TABLERO_DEFECTO = 4;
+
 class Juego {
     tablero;
     jugador1;
@@ -71,6 +74,7 @@ class Jugador {
         let nodoH1 = document.createElement('h1');
         nodoH1.classList.add('jugador');
         nodoH1.innerHTML = "Turno de " + this.nombre;
+        nodoH1.classList.add('jugador1');
         return nodoH1;
     }
 }
@@ -136,23 +140,65 @@ function actualizaEstadisticas (juego) {
  * @returns 
  */
 function compruebaTresEnRaya (juego, fila, columna, variableAComparar) {
-    return compruebaFilas(juego, fila, variableAComparar) || compruebaColumnas(juego, columna, variableAComparar);
+    return compruebaFilas(juego, fila, variableAComparar) ||
+            compruebaColumnas(juego, columna, variableAComparar) ||
+            compruebaDiagonal(juego, variableAComparar);
 }
 
-function compruebaDiagonal (juego) {
+function compruebaDiagonal (juego, variableAComparar) {
     let encontrado = false;
     let i = 0;
     let j = 0;
+    while (!encontrado && i < juego.tablero.dimension) {
+        while (!encontrado && j < juego.tablero.dimension) {
+            if (juego.tablero.tablero[i][j] === variableAComparar) {
+                encontrado = compruebaDiagonalDerecha(juego, variableAComparar, i, j) ||
+                            compruebaDiagonalIzquierda(juego, variableAComparar, i, j);
+            }
+            j++;
+        }
+        j = 0;
+        i++;
+    }
+    return encontrado;
+}
+
+function compruebaDiagonalIzquierda (juego, variableAComparar, fila, columna) {
+    let encontrado = false;
     let nCasillas = 0;
-    let variableAComparar;
-    if (juego.jugadorActivo === juego.jugador1) {
-        variableAComparar = 1;
-    } else {
-        variableAComparar = 2;
+    while (!encontrado && fila < juego.tablero.dimension && columna >= 0) {
+        if (juego.tablero.tablero[fila][columna] === variableAComparar) {
+            nCasillas++;
+        } else {
+            nCasillas = 0;
+        } 
+        if (nCasillas === WIN_CONDITION) {
+            encontrado = true;
+        } else {
+            fila++;
+            columna--;
+        }
     }
-    while (!encontrado && i < juego.tablero.dimension && j < juego.tablero.dimension) {
-        
+    return encontrado;
+}
+
+function compruebaDiagonalDerecha (juego, variableAComparar, fila, columna) {
+    let encontrado = false;
+    let nCasillas = 0;
+    while (!encontrado && fila < juego.tablero.dimension && columna < juego.tablero.dimension) {
+        if (juego.tablero.tablero[fila][columna] === variableAComparar) {
+            nCasillas++;
+        } else {
+            nCasillas = 0;
+        } 
+        if (nCasillas === WIN_CONDITION) {
+            encontrado = true;
+        } else {
+            fila++;
+            columna++;
+        }
     }
+    return encontrado;
 }
 
 /**
@@ -172,7 +218,7 @@ function compruebaFilas (juego, fila, variableAComparar) {
         } else {
             nCasillas = 0;
         }
-        if (nCasillas === 3) {
+        if (nCasillas === WIN_CONDITION) {
             encontrado = true;
         } else {
             columna++;
@@ -198,13 +244,11 @@ function compruebaColumnas (juego, columna, variableAComparar) {
         } else {
             nCasillas = 0;
         }
-        if (nCasillas === 3) {
+        if (nCasillas === WIN_CONDITION) {
             encontrado = true;
         } else {
             fila++;
         }
-        console.log(fila);
-        console.log(columna);
     }
     return encontrado;
 }
@@ -221,7 +265,7 @@ function reiniciaClases() {
 }
 
 function reiniciaJuego (juego) {
-    juego.reiniciaTablero(4);
+    juego.reiniciaTablero(TAMAÑO_TABLERO_DEFECTO);
     juego.jugadorActivo = juego.jugador1;
     reiniciaClases();
     actualizaEstadisticas(juego);
@@ -246,6 +290,17 @@ function actualizaGanadorJuego (juego) {
     }
 }
 
+function gestionaColores (nodoJugador, juego) {
+    nodoJugador.innerHTML = "Turno de " + juego.jugadorActivo.nombre;
+    if (juego.jugadorActivo === juego.jugador1) {
+        nodoJugador.classList.remove('jugador2');
+        nodoJugador.classList.add('jugador1');
+    } else {
+        nodoJugador.classList.add('jugador1');
+        nodoJugador.classList.add('jugador2');
+    }
+}
+
 function logicaJuego(juego, fila, columna, variableAComparar, nodoH2){
     juego.tablero.tablero[fila][columna] = variableAComparar;
     if (compruebaTresEnRaya(juego, fila, columna, variableAComparar)) {
@@ -254,13 +309,13 @@ function logicaJuego(juego, fila, columna, variableAComparar, nodoH2){
         reiniciaJuego(juego);
     } else {
         nodoH2.innerHTML = "Tres en raya";
+        juego.cambiaJugadorActivo();
     }
-    juego.cambiaJugadorActivo();
 }
 
 function juego () {
 
-    let juego = new Juego (4, "Jugador 1", "Jugador 2");
+    let juego = new Juego (TAMAÑO_TABLERO_DEFECTO, "Jugador 1", "Jugador 2");
     inicializaJuego(juego);
 
     let nodoConsola = nodoJuego.querySelector('.consola');
@@ -284,7 +339,7 @@ function juego () {
                     logicaJuego(juego, fila, columna, 2, nodoH2);
                 }
             }
-            nodoJugador.innerHTML = "Turno de " + juego.jugadorActivo.nombre;
+            gestionaColores (nodoJugador, juego);
         });
     }
 }

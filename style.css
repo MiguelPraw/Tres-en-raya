@@ -37,6 +37,16 @@ body {
     background-color: rgb(18 126 34);
 }
 
+.jugador1 {
+    color: rgb(155 41 20);
+    transition: all 0.3s ease;
+}
+
+.jugador2 {
+    color: rgb(18 126 34);
+    transition: all 0.3s ease;
+}
+
 .resultados {
     display: flex;
     flex-direction: column;
