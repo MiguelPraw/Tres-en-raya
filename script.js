@@ -1,9 +1,12 @@
 'use strict'
 
+let nodoEmpezar = document.querySelector("#empezar");
 let nodoJuego = document.querySelector("#juego");
 
 const WIN_CONDITION = 3;
 const TAMAÑO_TABLERO_DEFECTO = 4;
+const VARIABLE_JUGADOR1 = 1;
+const VARIABLE_JUGADOR2 = 2;
 
 class Juego {
     tablero;
@@ -264,9 +267,12 @@ function reiniciaClases() {
     }
 }
 
+/**
+ * Reinicia el array del tablero, el jugador, las clases CSS y actualiza las estadisticas
+ * @param {*} juego 
+ */
 function reiniciaJuego (juego) {
     juego.reiniciaTablero(TAMAÑO_TABLERO_DEFECTO);
-    juego.jugadorActivo = juego.jugador1;
     reiniciaClases();
     actualizaEstadisticas(juego);
 }
@@ -296,12 +302,12 @@ function gestionaColores (nodoJugador, juego) {
         nodoJugador.classList.remove('jugador2');
         nodoJugador.classList.add('jugador1');
     } else {
-        nodoJugador.classList.add('jugador1');
+        nodoJugador.classList.remove('jugador1');
         nodoJugador.classList.add('jugador2');
     }
 }
 
-function logicaJuego(juego, fila, columna, variableAComparar, nodoH2){
+function logicaJuego(juego,  fila, columna, variableAComparar, nodoH2){
     juego.tablero.tablero[fila][columna] = variableAComparar;
     if (compruebaTresEnRaya(juego, fila, columna, variableAComparar)) {
         nodoH2.innerHTML = "Ganaste " + juego.jugadorActivo.nombre;
@@ -313,13 +319,12 @@ function logicaJuego(juego, fila, columna, variableAComparar, nodoH2){
     }
 }
 
-function juego () {
+function empiezaJuego (juego) {
 
-    let juego = new Juego (TAMAÑO_TABLERO_DEFECTO, "Jugador 1", "Jugador 2");
     inicializaJuego(juego);
 
-    let nodoConsola = nodoJuego.querySelector('.consola');
     let nodoJugador = nodoJuego.querySelector('.jugador');
+    let nodoConsola = nodoJuego.querySelector('.consola');
     let nodoH2 = nodoConsola.querySelector('h2');
 
     let nodoCasillas = nodoJuego.querySelectorAll('.casilla');
@@ -333,10 +338,10 @@ function juego () {
             } else {
                 if (juego.jugadorActivo === juego.jugador1) {
                     nodoCasillas[i].classList.add('activo1');
-                    logicaJuego(juego, fila, columna, 1, nodoH2);
+                    logicaJuego(juego, fila, columna, VARIABLE_JUGADOR1, nodoH2);
                 } else {
                     nodoCasillas[i].classList.add('activo2');
-                    logicaJuego(juego, fila, columna, 2, nodoH2);
+                    logicaJuego(juego, fila, columna, VARIABLE_JUGADOR2, nodoH2);
                 }
             }
             gestionaColores (nodoJugador, juego);
@@ -344,4 +349,18 @@ function juego () {
     }
 }
 
-juego();
+nodoEmpezar.addEventListener ('click', () => {
+    let nodoModal = document.querySelector("#modal");
+    let nodoJugador1 = nodoModal.querySelector("#jugador1");
+    let nodoJugador2 = nodoModal.querySelector("#jugador2");
+    let nodoDimension = nodoModal.querySelector("#dimension");
+
+    if (nodoJugador1.value === "" || nodoJugador2.value === "" || nodoDimension.value === "") {
+        let nodoConsola = nodoModal.querySelector("#consola");
+        nodoConsola.innerHTML = "Introduce todos los campos";
+    } else {
+        nodoModal.classList.add("empezado");
+        let juego = new Juego (nodoDimension.value, nodoJugador1.value, nodoJugador2.value);
+        empiezaJuego(juego);
+    }
+});

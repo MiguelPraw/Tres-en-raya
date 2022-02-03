@@ -1,6 +1,97 @@
-body {
-    
+:root {
+    --color-jugador1: rgb(155 41 20);
+    --color-jugador2: rgb(18 126 34);
+    --color-terciario: rgb(16 74 76);
+    --fuente: 'Press Start 2P';
+}
+
+::selection {
     background-color: black;
+}
+
+body {
+    background-color: black;
+}
+
+#modal {
+    position: absolute;
+    top: 0;
+    left: 0;
+    
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    background-color: black;
+    height: 100vh;
+    width: 100%;
+    gap: 10px;
+    transition: all 1.5s ease;
+}
+
+.empezado {
+    opacity: 0;
+    visibility: hidden;
+}
+
+#modal h3 {
+    font-family: var(--fuente);
+    font-size: 2.5em;
+    color: var(--color-jugador1);
+    animation: efecto 2s infinite forwards;
+}
+
+input {
+    border: none;
+    border-bottom: 3px solid rgb(33, 57, 58);
+    border-radius: 10px;
+
+    background-color: var(--color-terciario);
+    color: white;
+    text-align: center;
+    caret-color: var(--color-terciario);
+
+    padding: 10px;
+    font-family: var(--fuente);
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+}
+
+input:focus-visible {
+    outline: 2px solid white;
+}
+
+#jugador1::placeholder, #jugador2::placeholder, #dimension::placeholder {
+    color: rgb(18, 183, 189);
+    text-align: center;
+    opacity: 0.7;
+}
+
+#empezar {
+    background-color: var(--color-jugador1);
+    border-radius: 5px;
+    border: none;
+    width: auto;
+    height: auto;
+    transition: all 1s ease;
+}
+
+#empezar:hover {
+    transform: scale(1.1);
+    cursor: pointer;
+}
+
+.material-icons {
+    color: white;
+}
+
+#consola {
+    color: white;
+    font-family: var(--fuente);
 }
 
 #juego {
@@ -9,7 +100,7 @@ body {
     justify-content: center;
     align-items: center;
     color: rgb(18, 183, 189);
-    font-family: 'Press Start 2P';
+    font-family: var(--fuente);
 }
 
 .tablero {
@@ -27,23 +118,24 @@ body {
 
 .casilla:hover {
     opacity: 0.8;
+    transform: scale(1.05);
 }
 
 .activo1 {
-    background-color: rgb(155 41 20);
+    background-color: var(--color-jugador1);
 }
 
 .activo2 {
-    background-color: rgb(18 126 34);
+    background-color: var(--color-jugador2);
 }
 
 .jugador1 {
-    color: rgb(155 41 20);
+    color: var(--color-jugador1);
     transition: all 0.3s ease;
 }
 
 .jugador2 {
-    color: rgb(18 126 34);
+    color: var(--color-jugador2);
     transition: all 0.3s ease;
 }
 
@@ -51,7 +143,6 @@ body {
     display: flex;
     flex-direction: column;
     font-family: 'Press Start 2P';
-
 }
 
 .estadisticas {
@@ -67,4 +158,20 @@ body {
     margin: 0;
 }
 
-
+@keyframes efecto {
+    0% {
+        padding-bottom: 0;
+    }
+    25% {
+        padding-bottom: -5px;
+    }
+    50% {
+        padding-bottom: 0;
+    }
+    75% {
+        padding-bottom: 5px;
+    }
+    100% {
+        padding-bottom: 0;
+    }
+}
